@@ -34,7 +34,8 @@ function preprocess(graph) {
     epnodes[s].push(o);
   }
   for (var epnode in epnodes) {
-    const epnode_ = epnodes[epnode].join('|');
+    // const epnode_ = epnodes[epnode].join('|');
+    const epnode_ = epnode + ' descriptors'; 
     node_list.push({"id": epnode_, "group": 5});
     link_list.push({"source": epnode, "target": epnode_, "value": "DESCRIPTOR"});
   }
@@ -46,7 +47,7 @@ function preprocess(graph) {
 
 export function run_d3(graphQuery, container, d3) {
   const graph = preprocess(graphQuery)
-  var svg = d3.select(container || "body").append("svg").attr("width","1800").attr("height", "1500").attr("overflow", "scroll");
+  var svg = d3.select(container || "body").append("svg").attr("width","1600").attr("height", "1400").attr("overflow", "scroll");
   const width = +svg.attr("width"), height = +svg.attr("height");
 
   var color = d3.scaleOrdinal(d3.schemeCategory20);
@@ -60,7 +61,7 @@ export function run_d3(graphQuery, container, d3) {
 
   var simulation = d3.forceSimulation()
       .force("link", d3.forceLink().id(function(d) { return d.id; }))
-      .force("collide", d3.ellipseForce(80, 2, 10))
+      .force("collide", d3.ellipseForce(80, 2, 1))
       .force("center", d3.forceCenter(width / 2, height / 2));
 
   var link = svg.append("g")
