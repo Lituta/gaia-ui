@@ -9,6 +9,7 @@ export const SET_CUR_EP = 'SET_CUR_EP';
 export const ADD_RESPONSE = 'ADD_RESPONSE';
 export const SET_CUR_RESPONSE_KEY = 'SET_CUR_RESPONSE_KEY';
 export const SET_LOADING = 'SET_LOADING';
+export const SET_CUR_QUERY_BODY = 'SET_CUR_QUERY_BODY';
 
 export function fetchConfigs(cb) {
   return (dispatch) => {
@@ -138,5 +139,12 @@ export function setLoading(loading) {
   return {
     type: SET_LOADING,
     payload: loading
+  };
+}
+
+export function setCurQueryBody(data) {
+  return {
+    type: SET_CUR_QUERY_BODY,
+    payload: data
   };
 }

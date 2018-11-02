@@ -10,7 +10,7 @@ import ConfigPanel from './ConfigPanel';
 import ResultPanel from './ResultPanel';
 import LoadingMask from './LoadingMask';
 
-const drawerWidth = 420;
+const drawerWidth = 480;
 
 const styles = theme => ({
   root: {

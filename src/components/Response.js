@@ -1,14 +1,26 @@
 import React, { Component } from 'react';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
 
-import { getClusterVizUrl } from '../resources/constants';
+import SingleResponseTable from './SingleResponseTable';
+import SingleResponseViz from './SingleResponseViz';
+
 
 class Response extends Component {
+
+  renderResponses(responseList, queryBody) {
+    return responseList.map((res, idx) => {
+         const edgeList = Array.isArray(res.edge) ?  res.edge : [res.edge];
+         return (
+           <div key={idx}>
+             <p>Response No. {idx}</p>
+             { queryBody ? <SingleResponseViz edgeList={edgeList} queryBody={queryBody} /> : <SingleResponseTable edgeList={edgeList} /> }
+           </div>
+         );
+       }
+   );
+  }
+
   render() {
-    const { response } = this.props;
+    const { response, queryBody } = this.props;
     // export const ta2graph = {
     //   "dummy":
     //   {
@@ -30,31 +42,11 @@ class Response extends Component {
     }
     return (
       <div>
-        <Table>
-          <TableBody>
-            {Object.keys(response).map(key => {
-              const query_id = response[key].graphquery_responses['@id'];
-              const response_list = Array.isArray(response[key].graphquery_responses.response) ?  response[key].graphquery_responses.response : [response[key].graphquery_responses.response];
-              return response_list.map((res, idx) => {
-                 const edge_list = Array.isArray(res.edge) ?  res.edge : [res.edge];
-                 return edge_list.map(edge => {
-                   const uniqueKey = [key, idx, edge['@id']].join('/');
-                   const justi = edge.justifications.justification;
-                   const sub = justi.subject_justification.system_nodeid, obj = justi.object_justification.system_nodeid;
-                   return (
-                       <TableRow key={uniqueKey}>
-                         <TableCell>{uniqueKey}</TableCell>
-                         <TableCell>{justi['@docid']}</TableCell>
-                         <TableCell>{sub}<a href={getClusterVizUrl(sub)} target="_blank">viz</a></TableCell>
-                         <TableCell>{justi.edge_justification.confidence}</TableCell>
-                         <TableCell>{obj}<a href={getClusterVizUrl(obj)} target="_blank">viz</a></TableCell>
-                       </TableRow>
-                   );
-                 });
-              });
-            })}
-          </TableBody>
-        </Table>
+        {Object.keys(response).map(key => {
+          const query_id = response[key].graphquery_responses['@id'];
+          const responseList = Array.isArray(response[key].graphquery_responses.response) ?  response[key].graphquery_responses.response : [response[key].graphquery_responses.response];
+          return <div key={key}><h4>Doc ID: {key}</h4>{this.renderResponses(responseList, queryBody)}</div>;
+        })}
       </div>
     )
   }

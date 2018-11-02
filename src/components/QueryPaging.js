@@ -105,15 +105,19 @@ const styles = theme => ({
   table: {
   },
   tableWrapper: {
-    overflowX: 'hidden',
+    overflowX: 'scroll',
     padding: '0 5px'
   },
-  tabelCell: {
+  tableCell: {
     maxWidth: 260,
     overflow: 'scroll',
+    padding: '5px 0'
   },
-  tabelCellIdx: {
+  tableCellIdx: {
     fontSize: 10,
+  },
+  tableRow: {
+    height: 'auto'
   }
 });
 
@@ -140,7 +144,8 @@ class CustomPaginationActionsTable extends React.Component {
       viz: <DialogDisplay title="VIZ" child={
         <SVG graphQuery={ele.query_json} />
       } />,
-      apply: <button onClick={() => { console.log(ele.query_idx); this.props.applyQuery(ele.query_idx); }}>APPLY</button>
+      find: <button onClick={() => { console.log(ele.query_idx); this.props.findQuery(ele.query_idx, ele.query_json); }}>FIND</button>,
+      query: <button onClick={() => { console.log(ele.query_idx); this.props.applyQuery(ele.query_idx, ele.query_json); }}>QUERY</button>
     };
   }
 
@@ -164,12 +169,13 @@ class CustomPaginationActionsTable extends React.Component {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 return (
-                  <TableRow key={row.idx}>
-                    <TableCell className={classes.tabelCellIdx}>{row.idx}</TableCell>
-                    <TableCell className={classes.tabelCell}>{row.id.replace("2018_P103_Q002_", "").replace("AIDA_", "")}</TableCell>
-                    <TableCell className={classes.tabelCell}>{row.json}</TableCell>
-                    <TableCell className={classes.tabelCell}>{row.viz}</TableCell>
-                    <TableCell className={classes.tabelCell}>{row.apply}</TableCell>
+                  <TableRow key={row.idx} className={classes.tableRow}>
+                    <TableCell className={classes.tableCellIdx}>{row.idx}</TableCell>
+                    <TableCell className={classes.tableCell}>{row.id.replace("2018_P103_Q002_", "").replace("AIDA_", "")}</TableCell>
+                    <TableCell className={classes.tableCell}>{row.json}</TableCell>
+                    <TableCell className={classes.tableCell}>{row.viz}</TableCell>
+                    <TableCell className={classes.tableCell}>{row.find}</TableCell>
+                    <TableCell className={classes.tableCell}>{row.query}</TableCell>
                   </TableRow>
                 );
               })}

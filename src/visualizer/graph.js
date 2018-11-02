@@ -1,6 +1,4 @@
-
-
-function preprocess(graph) {
+function preprocess(graph, boldEdgeId) {
   var links = {};
   var nodes = {};
   var node_list = [];
@@ -9,13 +7,17 @@ function preprocess(graph) {
   const edges = Array.isArray(graph.graph.edges.edge) ? graph.graph.edges.edge : [graph.graph.edges.edge];
   for (var i = 0; i < edges.length; i++){
     const edge = edges[i];
+    let bold = false;
+    if (boldEdgeId && boldEdgeId.includes(edge['@id'])) {
+      bold = true;
+    }
     const s = edge.subject;
-    const p = edge.predicate;
+    const p = bold ? `FIND[${edge.predicate}]` : edge.predicate;
     const o = edge.object;
     var k = s+','+o ;
-    links[k] = links[k] ? links[k] + ',' + p : p ;
-    nodes[s] = 1;
-    nodes[o] = 10;
+    links[k] = links[k] ? links[k] + '|' + p : p ;
+    nodes[s] = (nodes[s]===11 || bold) ? 11 : 1;
+    nodes[o] = (nodes[o]===19 || bold) ? 19 : 9;
   }
   for(var link in links){
     const tmp = link.split(',');
@@ -35,9 +37,9 @@ function preprocess(graph) {
   }
   for (var epnode in epnodes) {
     // const epnode_ = epnodes[epnode].join('|');
-    const epnode_ = epnode + ' descriptors'; 
+    const epnode_ = epnode + ' descriptors';
     node_list.push({"id": epnode_, "group": 5});
-    link_list.push({"source": epnode, "target": epnode_, "value": "DESCRIPTOR"});
+    link_list.push({"source": epnode_, "target": epnode, "value": "DESCRIPTOR"});
   }
   for (var node in nodes) {
     node_list.push({"id": node, "group": nodes[node]});
@@ -45,9 +47,7 @@ function preprocess(graph) {
   return {"nodes": node_list, "links": link_list}
 }
 
-export function run_d3(graphQuery, container, d3) {
-  const graph = preprocess(graphQuery)
-  var svg = d3.select(container || "body").append("svg").attr("width","1600").attr("height", "1400").attr("overflow", "scroll");
+function draw(graph, svg, d3) {
   const width = +svg.attr("width"), height = +svg.attr("height");
 
   var color = d3.scaleOrdinal(d3.schemeCategory20);
@@ -69,7 +69,7 @@ export function run_d3(graphQuery, container, d3) {
     .selectAll("line")
     .data(graph.links)
     .enter().append("line")
-      .attr("stroke-width", function(d) { return 2})
+      .attr("stroke-width", function(d) { return 2 })
       .attr("stroke", function(d, idx) { return d.value==='DESCRIPTOR' ? 'black' : color(idx);});
 
   var text_link = svg.append("g")
@@ -92,7 +92,10 @@ export function run_d3(graphQuery, container, d3) {
     .enter().append("ellipse")
       .attr("rx", function(d) { return Math.min(d.rx, 120); })
       .attr("ry", function(d) { return d.ry; })
-      .attr("fill", function(d) { return color(d.group); });
+      .attr("fill", function(d) { return color(d.group > 10 ? d.group - 10 : d.group); })
+      .attr("stroke", function(d) { return d.group > 10 ? 'black' : 'white'; })
+      .attr("stroke-width", function(d) { return d.group > 10 ? 3 : 1; })
+      .attr("opacity", function(d) { return d.group > 10 ? 1 : 0.5; });
 
   svg.call(d3.zoom()
       .scaleExtent([0.5, 2])
@@ -107,7 +110,8 @@ export function run_d3(graphQuery, container, d3) {
       .attr("text-anchor", "middle")
       .text(function(d) {return d.id})
       .attr("fill", "black").attr("stroke-width", 1)
-      .style("font-size", "10px");
+      .style("font-size", "10px")
+      .style("font-weight", function(d) { return d.group > 10 ? 'bold' : 'normal'; });
 
   simulation
     .nodes(graph.nodes)
@@ -128,7 +132,7 @@ export function run_d3(graphQuery, container, d3) {
           var x = (d.source.x+d.target.x)/2 ;
           var y = (d.source.y+d.target.y)/2 ;
           var el = d3.select(this);
-          var words = d.value.split(',');
+          var words = d.value.split('|');
           el.text('');
 
           for (var i = 0; i < words.length; i++) {
@@ -165,4 +169,10 @@ export function run_d3(graphQuery, container, d3) {
         .attr("y", function(d) { return d.y; });
 
   }
+}
+
+export function run_d3(graphQuery, container, d3, boldEdgeId) {
+  const graph = preprocess(graphQuery, boldEdgeId)
+  var svg = d3.select(container || "body").append("svg").attr("width","1600").attr("height", "1400").attr("overflow", "scroll");
+  draw(graph, svg, d3);
 }

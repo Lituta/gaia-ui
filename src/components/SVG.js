@@ -3,10 +3,12 @@ import { run_d3 } from '../visualizer/graph';
 
 export default class SVG extends Component {
   componentDidMount() {
-    run_d3(this.props.graphQuery, '#graph-viz', window.d3)
+    const { graphQuery, containerId, boldEdgeId } = this.props;
+    run_d3(graphQuery, `#${containerId || "queryViz"}`, window.d3, boldEdgeId)
   }
 
   render() {
-    return <div id="graph-viz" />
+    const { containerId } = this.props;
+    return <div id={containerId || "queryViz"} style={containerId ? {zIndex: '-10', position: 'absolute'} : {}}/>;
   }
 }

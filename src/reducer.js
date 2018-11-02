@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { SET_CONFIGS, SET_CUR_QUERY_FILE, SET_QUERY_FILE, SET_CUR_EP, ADD_RESPONSE, SET_CUR_RESPONSE_KEY, SET_LOADING } from './actions';
+import { SET_CONFIGS, SET_CUR_QUERY_FILE, SET_QUERY_FILE, SET_CUR_EP, ADD_RESPONSE, SET_CUR_RESPONSE_KEY, SET_LOADING, SET_CUR_QUERY_BODY } from './actions';
 const initResponseState = {
 };
 
@@ -52,6 +52,11 @@ function app(state = initAppState, action) {
         ...state,
         loading: action.payload
       }
+    case SET_CUR_QUERY_BODY:
+      return {
+        ...state,
+        curQueryBody: action.payload
+      }
     default:
       return state;
   }
@@ -72,3 +77,4 @@ export const getCurEp = state => state.app.curEp;
 export const getCurResponseKey = state => state.app.curResponseKey;
 export const getCurResponse = state => state.response[state.app.curResponseKey];
 export const getResponse = (state, key) => state.response[key];
+export const getCurQueryBody = state => state.app.curQueryBody;

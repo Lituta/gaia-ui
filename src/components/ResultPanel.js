@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import { getCurResponse, getCurResponseKey } from '../reducer';
+import { getCurResponse, getCurResponseKey, getCurQueryBody } from '../reducer';
 import { ta2graph } from '../resources/sampleResponse';
 
 import Response from './Response';
@@ -40,7 +40,7 @@ class ResultPanel extends React.Component {
   };
 
   render() {
-    const { classes, curResponse, curResponseKey } = this.props;
+    const { classes, curResponse, curResponseKey, curQueryBody } = this.props;
     const { value } = this.state;
     // console.log('---curResponse', curResponse);
     // --- for test ---
@@ -61,7 +61,7 @@ class ResultPanel extends React.Component {
           </Tabs>
         </AppBar>
         {value === 'one' && <TabContainer>{!curResponse || curResponse.length === 0 ? "no response" : <Response response={curResponse} />}</TabContainer>}
-        {value === 'two' && <TabContainer>Not available</TabContainer>}
+        {value === 'two' && <TabContainer>{!curResponse || curResponse.length === 0 ? "no response" : <Response response={curResponse} queryBody={curQueryBody} />}</TabContainer>}
         {value === 'three' && <TabContainer>Not available</TabContainer>}
       </div>
     );
@@ -75,7 +75,8 @@ ResultPanel.propTypes = {
 function mapStateToProps(store) {
   return {
     curResponse: getCurResponse(store),
-    curResponseKey: getCurResponseKey(store)
+    curResponseKey: getCurResponseKey(store),
+    curQueryBody: getCurQueryBody(store)
   };
 }
 
