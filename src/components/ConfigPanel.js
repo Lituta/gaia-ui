@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Paper from '@material-ui/core/Paper';
 
-import { fetchConfigs, fetchQueryFile, applyQuery, findResponse, setCurEp, setCurResponseKey, setCurQueryBody } from '../actions';
+import { fetchConfigs, fetchQueryFile, findResponse, setCurEp, setCurResponseKey, setCurQueryBody } from '../actions';
 import { getConfigs, getCurQueryFile, getQueryFile, getCurEp, getResponse } from '../reducer';
 import DialogSelect from './DialogSelect';
 import QueryPaging from './QueryPaging';
@@ -44,17 +45,21 @@ class ConfigPanel extends Component{
     }
     const { queries, endpoints } = configs;
     return (
-      <div>
-        <DialogSelect options={endpoints} title={'endpoint-set'} selected={curEp} onOk={value => {
-          dispatch(setCurEp(value));
-        }}/>
-        <DialogSelect options={queries} title={'query-set'} selected={curQueryFile} onOk={value => { dispatch(fetchQueryFile(value, true)); }}/>
+      <Paper>
+        <div style={{display: 'block', height: '60px', borderBottom: '3px solid #ddd'}}>
+          <DialogSelect options={endpoints} title={'endpoint-set'} selected={curEp} onOk={value => {
+            dispatch(setCurEp(value));
+          }}/>
+          <DialogSelect options={queries} title={'query-set'} selected={curQueryFile} onOk={value => { dispatch(fetchQueryFile(value, true)); }}/>
+        </div>
+        <div style={{display: 'block', height: 'calc(100vh - 60px)', overflowY: 'scroll'}}>
         {queryFile ? <QueryPaging
           queryList={queryFile}
           applyQuery={(idx, queryBody) => this.applyQuery(idx, queryBody, true)}
           findQuery={(idx, queryBody) => this.applyQuery(idx, queryBody)}
           /> : null}
-      </div>
+        </div>
+      </Paper>
     )
   }
 }

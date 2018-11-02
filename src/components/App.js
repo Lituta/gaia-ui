@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { getLoading } from '../reducer';
 
 import ConfigPanel from './ConfigPanel';
@@ -14,15 +15,14 @@ const drawerWidth = 480;
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-  },
-  appBar: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
+    display: 'block',
   },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
+    position: 'absolute',
+    left: 0,
+    zIndex: '1111',
   },
   drawerPaper: {
     width: drawerWidth,
@@ -32,32 +32,60 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     padding: 0,
   },
+  leftArraw: {
+    position: 'absolute',
+    left: drawerWidth - 24,
+    top: '0',
+    cursor: 'pointer',
+    background: '#ddd'
+  },
+  rightArraw: {
+    zIndex: '1111',
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    cursor: 'pointer',
+    background: '#ddd'
+  }
 });
 
-function PermanentDrawerLeft(props) {
-  const { classes, loading } = props;
+class App extends Component {
+  state = {
+    open: true
+  }
 
-  return (
-    <div className={classes.root}>
-      {loading ? <LoadingMask /> : null}
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
-      >
-        <ConfigPanel />
-      </Drawer>
-      <main className={classes.content}>
-        <ResultPanel />
-      </main>
-    </div>
-  );
+  toggleOpen (value) {
+    this.setState({open: value});
+  }
+
+  render () {
+    const { classes, loading } = this.props;
+
+    return (
+      <div className={classes.root}>
+        {loading ? <LoadingMask /> : null}
+        <div
+          className={classes.drawer}
+          style={{display: this.state.open ? 'block': 'none'}}
+        >
+          <span className={classes.leftArraw}
+            onClick={() => {this.toggleOpen(false)}}
+          ><KeyboardArrowLeft /></span>
+          <ConfigPanel />
+        </div>
+        { this.state.open ? null: <span className={classes.rightArraw}
+           onClick={() => {this.toggleOpen(true)}}
+           ><KeyboardArrowRight /></span>
+        }
+        <div className={classes.content}>
+          <ResultPanel />
+        </div>
+      </div>
+    );
+  }
 }
 
-PermanentDrawerLeft.propTypes = {
+App.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -67,4 +95,4 @@ function mapStateToProps(store) {
   };
 }
 
-export default connect(mapStateToProps)(withStyles(styles)(PermanentDrawerLeft));
+export default connect(mapStateToProps)(withStyles(styles)(App));

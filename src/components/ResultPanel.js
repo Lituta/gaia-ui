@@ -5,29 +5,22 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 import { getCurResponse, getCurResponseKey, getCurQueryBody } from '../reducer';
-import { ta2graph } from '../resources/sampleResponse';
+// import { ta2graph } from '../resources/sampleResponse';
 
 import Response from './Response';
-
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  );
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
+  invisible: {
+    display: 'none'
+  },
+  visible: {
+    padding: 10
+  }
 });
 
 class ResultPanel extends React.Component {
@@ -60,9 +53,15 @@ class ResultPanel extends React.Component {
             <Tab value="three" label="Logs" />
           </Tabs>
         </AppBar>
-        {value === 'one' && <TabContainer>{!curResponse || curResponse.length === 0 ? "no response" : <Response response={curResponse} />}</TabContainer>}
-        {value === 'two' && <TabContainer>{!curResponse || curResponse.length === 0 ? "no response" : <Response response={curResponse} queryBody={curQueryBody} />}</TabContainer>}
-        {value === 'three' && <TabContainer>Not available</TabContainer>}
+        <div className={value === 'one' ? classes.visible : classes.invisible}>
+          {!curResponse || curResponse.length === 0 ? "no response" : <Response response={curResponse} />}
+        </div>
+        <div className={value === 'two' ? classes.visible : classes.invisible}>
+          {!curResponse || curResponse.length === 0 ? "no response" : <Response response={curResponse} queryBody={curQueryBody} />}
+        </div>
+        <div className={value === 'three' ? classes.visible : classes.invisible}>
+          Not available
+        </div>
       </div>
     );
   }

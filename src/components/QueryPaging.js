@@ -7,7 +7,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
@@ -100,7 +99,6 @@ const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: tru
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 1,
   },
   table: {
   },
@@ -117,7 +115,7 @@ const styles = theme => ({
     fontSize: 10,
   },
   tableRow: {
-    height: 'auto'
+    height: 'auto',
   }
 });
 
@@ -132,7 +130,7 @@ class CustomPaginationActionsTable extends React.Component {
     return {
       idx: ele.query_idx,
       id: ele.query_json['@id'],
-      json: <DialogDisplay title="JSON" child={
+      json: <DialogDisplay title="JSON"  header={`JSON ${ele.query_idx}`} child={
         <TextField
           disabled
           id="outlined-multiline-flexible"
@@ -141,13 +139,43 @@ class CustomPaginationActionsTable extends React.Component {
           variant="outlined"
           fullWidth
         />} />,
-      viz: <DialogDisplay title="VIZ" child={
+      viz: <DialogDisplay title='VIZ' header={`VIZ ${ele.query_idx}`} child={
         <SVG graphQuery={ele.query_json} />
       } />,
       find: <button onClick={() => { console.log(ele.query_idx); this.props.findQuery(ele.query_idx, ele.query_json); }}>FIND</button>,
       query: <button onClick={() => { console.log(ele.query_idx); this.props.applyQuery(ele.query_idx, ele.query_json); }}>QUERY</button>
     };
   }
+
+  // createData(ele) {
+  //   return {
+  //     idx: ele.query_idx,
+  //     twoLines: (
+  //       <div>
+  //         <div>
+  //           <span style={{paddingRight: '10px'}}>{ele.query_idx}</span>
+  //           <span>{ele.query_json['@id'].replace("2018_P103_Q002_", "").replace("AIDA_", "")}</span>
+  //         </div>
+  //         <div style={{display: 'inline-flex'}}>
+  //           <span><DialogDisplay title="JSON" child={
+  //             <TextField
+  //               disabled
+  //               id="outlined-multiline-flexible"
+  //               multiline
+  //               value={JSON.stringify(ele.query_json, null, 2)}
+  //               variant="outlined"
+  //               fullWidth
+  //             />} /></span>
+  //           <span><DialogDisplay title="VIZ" child={
+  //             <SVG graphQuery={ele.query_json} />
+  //           } /></span>
+  //           <span><button onClick={() => { console.log(ele.query_idx); this.props.findQuery(ele.query_idx, ele.query_json); }}>FIND</button></span>
+  //           <span><button onClick={() => { console.log(ele.query_idx); this.props.applyQuery(ele.query_idx, ele.query_json); }}>QUERY</button></span>
+  //         </div>
+  //       </div>
+  //     )
+  //   }
+  // }
 
   handleChangePage = (event, page) => {
     this.setState({ page });
@@ -163,7 +191,7 @@ class CustomPaginationActionsTable extends React.Component {
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     return (
-      <Paper className={classes.root}>
+      <div className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} padding="none">
             <TableBody>
@@ -176,6 +204,7 @@ class CustomPaginationActionsTable extends React.Component {
                     <TableCell className={classes.tableCell}>{row.viz}</TableCell>
                     <TableCell className={classes.tableCell}>{row.find}</TableCell>
                     <TableCell className={classes.tableCell}>{row.query}</TableCell>
+                    {/*<TableCell>{row.twoLines}</TableCell>*/}
                   </TableRow>
                 );
               })}
@@ -201,7 +230,7 @@ class CustomPaginationActionsTable extends React.Component {
             </TableFooter>
           </Table>
         </div>
-      </Paper>
+      </div>
     );
   }
 }

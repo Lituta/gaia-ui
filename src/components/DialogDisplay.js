@@ -19,7 +19,7 @@ class ScrollDialog extends React.Component {
   };
 
   render() {
-    const { title, child } = this.props;
+    const { title, child, header } = this.props;
     return (
       <div>
         <button onClick={this.handleClickOpen('paper')}>{title}</button>
@@ -31,7 +31,7 @@ class ScrollDialog extends React.Component {
           fullWidth
           maxWidth={false}
         >
-          <DialogTitle id="scroll-dialog-title">{title}</DialogTitle>
+          <DialogTitle id="scroll-dialog-title">{header || title}</DialogTitle>
           <DialogContent>
               {child}
           </DialogContent>

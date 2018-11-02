@@ -25,9 +25,9 @@ export default function SingleResponseTable({ edgeList }) {
                 <TableRow key={edgeID}>
                   <TableCell>{edgeID}</TableCell>
                   <TableCell>{justi['@docid']}</TableCell>
-                  <TableCell>{sub}<a href={getClusterVizUrl(sub)} target="_blank">viz</a></TableCell>
+                  <TableCell>{sub}<a href={getClusterVizUrl(sub)} target="_blank" rel="noopener noreferrer">viz</a></TableCell>
                   <TableCell>{justi.edge_justification.confidence}</TableCell>
-                  <TableCell>{obj}<a href={getClusterVizUrl(obj)} target="_blank">viz</a></TableCell>
+                  <TableCell>{obj}<a href={getClusterVizUrl(obj)} target="_blank" rel="noopener noreferrer">viz</a></TableCell>
                 </TableRow>
             );
           })

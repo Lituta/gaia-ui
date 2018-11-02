@@ -10,9 +10,9 @@ class Response extends Component {
     return responseList.map((res, idx) => {
          const edgeList = Array.isArray(res.edge) ?  res.edge : [res.edge];
          return (
-           <div key={idx}>
+           <div key={idx} style={{display: 'block'}}>
              <p>Response No. {idx}</p>
-             { queryBody ? <SingleResponseViz edgeList={edgeList} queryBody={queryBody} /> : <SingleResponseTable edgeList={edgeList} /> }
+             { queryBody ? <SingleResponseViz edgeList={edgeList} queryBody={queryBody} idx={idx} /> : <SingleResponseTable edgeList={edgeList} /> }
            </div>
          );
        }
@@ -43,7 +43,7 @@ class Response extends Component {
     return (
       <div>
         {Object.keys(response).map(key => {
-          const query_id = response[key].graphquery_responses['@id'];
+          // const query_id = response[key].graphquery_responses['@id'];
           const responseList = Array.isArray(response[key].graphquery_responses.response) ?  response[key].graphquery_responses.response : [response[key].graphquery_responses.response];
           return <div key={key}><h4>Doc ID: {key}</h4>{this.renderResponses(responseList, queryBody)}</div>;
         })}
