@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 
-import { fetchConfigs, fetchQueryFile, findResponse, setCurEp, setCurResponseKey, setCurQueryBody } from '../actions';
+import { fetchConfigs, fetchQueryFile, queryResponse, findResponse, setCurEp, setCurResponseKey, setCurQueryBody } from '../actions';
 import { getConfigs, getCurQueryFile, getQueryFile, getCurEp, getResponse } from '../reducer';
 import DialogSelect from './DialogSelect';
 import QueryPaging from './QueryPaging';
@@ -21,13 +21,13 @@ class ConfigPanel extends Component{
     this.applyQuery = this.applyQuery.bind(this);
   }
 
-  applyQuery(query_idx, queryBody, applyQuery) {
+  applyQuery(query_idx, queryBody, realSendQuery) {
     const { curQueryFile, curEp, getResponseProps, dispatch } =  this.props;
     if(curEp) {
       const key = [curQueryFile, query_idx, curEp].join('/');
       if(!getResponseProps(key)) {
-        if(applyQuery) {
-          dispatch(applyQuery(key));
+        if(realSendQuery) {
+          dispatch(queryResponse(key));
         } else {
           dispatch(findResponse(key));
         }

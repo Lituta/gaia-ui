@@ -86,6 +86,33 @@ export function findResponse(combinedKey, cb) {
   }
 }
 
+export function queryResponse(combinedKey, cb) {
+  console.log('--- action queryResponse called ---', combinedKey);
+  // combinedKey = curQueryFile/query_idx/curEp
+  return (dispatch) => {
+    dispatch(setLoading(true));
+    axios.get(`${server_base}apply/${combinedKey}`)
+      .then(response => {
+        console.log(' * Success! queryResponse 0000', combinedKey);
+        if (!response.data) {
+          dispatch(setLoading(false));
+          if (cb) cb(true, 'failed');
+          return;
+        }
+        console.log(response.data);
+        dispatch(addResponse(combinedKey, response.data));
+        dispatch(setCurResponseKey(combinedKey));
+        dispatch(setLoading(false));
+        if (cb) cb(false, 'success queryResponse');
+      })
+      .catch(error => {
+        console.log('Error queryResponse', error);
+        dispatch(setLoading(false));
+        if (cb) cb(true, error);
+      });
+  }
+}
+
 export function setConfigs(data) {
   console.log('--- action setConfigs called ---');
   return {
