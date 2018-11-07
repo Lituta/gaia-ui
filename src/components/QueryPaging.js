@@ -126,6 +126,10 @@ class CustomPaginationActionsTable extends React.Component {
     rowsPerPage: 50,
   };
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ rows: nextProps.queryList.map(ele => { return this.createData(ele); }) });
+  }
+
   createData(ele) {
     return {
       idx: ele.query_idx,

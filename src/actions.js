@@ -38,7 +38,7 @@ export function fetchConfigs(cb) {
 export function fetchQueryFile(queryKey, sample, cb) {
   return (dispatch) => {
     dispatch(setLoading(true));
-    axios.get(`${server_base}query_instance/${queryKey}${sample ? '/sample' : '/'}`)
+    axios.get(`${server_base}query_instance/${queryKey}${sample ? '/sample' : '/all'}`)
       .then(response => {
         console.log(' * Success! fetchQueryFile 0000', queryKey);
         if (!response.data || response.data.length === 0) {

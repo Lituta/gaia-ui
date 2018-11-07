@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
+import Switch from '@material-ui/core/Switch';
 
 import { fetchConfigs, fetchQueryFile, queryResponse, findResponse, setCurEp, setCurResponseKey, setCurQueryBody } from '../actions';
 import { getConfigs, getCurQueryFile, getQueryFile, getCurEp, getResponse } from '../reducer';
@@ -13,12 +14,14 @@ class ConfigPanel extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      queryFile: null
+      queryFile: null,
+      sampleQuery: true
     };
     this.props.dispatch(fetchConfigs());
     this.props.dispatch(setCurEp(default_ep));
     this.props.dispatch(fetchQueryFile(default_query, true));
     this.applyQuery = this.applyQuery.bind(this);
+    this.handleToggleSampleQuery = this.handleToggleSampleQuery.bind(this);
   }
 
   applyQuery(query_idx, queryBody, realSendQuery) {
@@ -38,6 +41,11 @@ class ConfigPanel extends Component{
     dispatch(setCurQueryBody(queryBody));
   }
 
+  handleToggleSampleQuery(event) {
+    this.props.dispatch(fetchQueryFile(default_query, event.target.checked));
+    this.setState({ sampleQuery: event.target.checked });
+  }
+
   render() {
     const { configs, curQueryFile, queryFile, curEp, dispatch } =  this.props;
     if(!configs){
@@ -53,11 +61,19 @@ class ConfigPanel extends Component{
           <DialogSelect options={queries} title={'query-set'} selected={curQueryFile} onOk={value => { dispatch(fetchQueryFile(value, true)); }}/>
         </div>
         <div style={{display: 'block', height: 'calc(100vh - 60px)', overflowY: 'scroll'}}>
-        {queryFile ? <QueryPaging
-          queryList={queryFile}
-          applyQuery={(idx, queryBody) => this.applyQuery(idx, queryBody, true)}
-          findQuery={(idx, queryBody) => this.applyQuery(idx, queryBody)}
-          /> : null}
+          <span style={{display: 'inline-flex', margin: '-10px 0'}}>
+            <Switch
+              checked={this.state.sampleQuery}
+              onChange={this.handleToggleSampleQuery}
+              value="sampleQuery"
+            /><p>sample query</p>
+          </span>
+          { queryFile ? <QueryPaging
+            queryList={queryFile}
+            applyQuery={(idx, queryBody) => this.applyQuery(idx, queryBody, true)}
+            findQuery={(idx, queryBody) => this.applyQuery(idx, queryBody)}
+            /> : null
+          }
         </div>
       </Paper>
     )
