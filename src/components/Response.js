@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 
 import SingleResponseTable from './SingleResponseTable';
-import SingleResponseViz from './SingleResponseViz';
+import SVG from './SVG';
 
 
 class Response extends Component {
 
-  renderResponses(responseList, queryBody) {
+  renderResponses(responseList, queryBody, responseId) {
     return responseList.map((res, idx) => {
          const edgeList = Array.isArray(res.edge) ?  res.edge : [res.edge];
          return (
            <div key={idx} style={{display: 'block'}}>
              <p>Response No. {idx}</p>
-             { queryBody ? <SingleResponseViz edgeList={edgeList} queryBody={queryBody} idx={idx} /> : <SingleResponseTable edgeList={edgeList} /> }
+             { queryBody ? <SVG graphQuery={queryBody}
+                                containerId={`${responseId}_${idx}`}
+                                boldEdgeId={edgeList.map(edge => edge['@id'])}
+                           /> : <SingleResponseTable edgeList={edgeList} />
+            }
            </div>
          );
        }
@@ -43,9 +47,9 @@ class Response extends Component {
     return (
       <div>
         {Object.keys(response).map(key => {
-          // const query_id = response[key].graphquery_responses['@id'];
+          const responseId = response[key].graphquery_responses['@id'];
           const responseList = Array.isArray(response[key].graphquery_responses.response) ?  response[key].graphquery_responses.response : [response[key].graphquery_responses.response];
-          return <div key={key}><h4>Doc ID: {key}</h4>{this.renderResponses(responseList, queryBody)}</div>;
+          return <div key={key}><h4>Doc ID: {key}</h4>{this.renderResponses(responseList, queryBody, responseId)}</div>;
         })}
       </div>
     )
