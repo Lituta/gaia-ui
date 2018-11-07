@@ -54,6 +54,17 @@ function draw(graph, svg, d3, container) {
       width = +svg.attr("width") - margin.left - margin.right,
       height = +svg.attr("height") - margin.top - margin.bottom;
 
+    svg.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .style("cursor", "all-scroll")
+      .call(d3.zoom()
+        .scaleExtent([1 / 2, 4])
+        .on("zoom", zoomed)
+      );
+
     var focus = svg.append("g")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -64,24 +75,31 @@ function draw(graph, svg, d3, container) {
       nd.ry = 12;
     }
 
+    // var simulation = d3.forceSimulation()
+    //     .force("link", d3.forceLink().id(function(d) { return d.id; }))
+    //     .force("collide", d3.ellipseForce(80, 2, 1))
+    //     .force("center", d3.forceCenter(width / 2, height / 2));
     var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("collide", d3.ellipseForce(80, 2, 1))
+        .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(100).strength(1))
+        .force("charge", d3.forceManyBody())
+        .force("collide", d3.ellipseForce(70, 1, 1))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
     var link = focus.append("g")
         .attr("class", "link")
-      .selectAll("line")
-      .data(graph.links)
-      .enter().append("line")
+        .selectAll("line")
+        .data(graph.links)
+        .enter().append("line")
         .attr("stroke-width", function(d) { return 2 })
+        .attr("stroke-opacity", function(d) { return 0.5 })
         .attr("stroke", function(d, idx) { return d.value==='DESCRIPTOR' ? 'black' : color(idx);});
 
     var text_link = focus.append("g")
         .attr("class", "link-labels")
-      .selectAll("text")
-      .data(graph.links)
-      .enter().append("text")
+        .selectAll("text")
+        .data(graph.links)
+        .enter()
+        .append("text")
         .attr("dy", -2)
         .attr("text-anchor", "middle")
         .text(function(d) {
@@ -89,18 +107,6 @@ function draw(graph, svg, d3, container) {
         })
         .attr("fill", function(d, idx) { return d.value==='DESCRIPTOR' ? 'black' : color(idx); })
         .style("font-size", "10px");
-
-    var node = focus.append("g")
-        .attr("class", "node")
-      .selectAll("ellipse")
-      .data(graph.nodes)
-      .enter().append("ellipse")
-        .attr("rx", function(d) { return Math.min(d.rx, 120); })
-        .attr("ry", function(d) { return d.ry; })
-        .attr("fill", function(d) { return color(d.group > 10 ? d.group - 10 : d.group); })
-        .attr("stroke", function(d) { return d.group > 10 ? 'black' : 'white'; })
-        .attr("stroke-width", function(d) { return d.group > 10 ? 3 : 1; })
-        .attr("opacity", function(d) { return d.group > 10 ? 1 : 0.5; });
 
     var text = focus.append("g")
         .attr("class", "labels")
@@ -112,7 +118,25 @@ function draw(graph, svg, d3, container) {
         .text(function(d) {return d.id})
         .attr("fill", "black").attr("stroke-width", 1)
         .style("font-size", "10px")
-        .style("font-weight", function(d) { return d.group > 10 ? 'bold' : 'normal'; });
+        .style("font-weight", 'bold');
+
+    var node = focus.append("g")
+        .attr("class", "node")
+        .selectAll("ellipse")
+        .data(graph.nodes)
+        .enter().append("ellipse")
+        .attr("rx", function(d) { return Math.min(d.rx, 120); })
+        .attr("ry", function(d) { return d.ry; })
+        .attr("fill", function(d) { return color(d.group > 10 ? d.group - 10 : d.group); })
+        .attr("stroke", function(d) { return d.group > 10 ? 'red' : 'black'; })
+        .attr("stroke-width", function(d) { return d.group > 10 ? 3 : 1; })
+        .attr("fill-opacity", function(d) { return d.group > 10 ? 0 : 0.3; })
+        .style("cursor", "grab")
+        .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended)
+        );
 
     simulation
       .nodes(graph.nodes)
@@ -171,17 +195,23 @@ function draw(graph, svg, d3, container) {
 
     }
 
-  svg.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .call(d3.zoom()
-          .scaleExtent([1 / 2, 4])
-          .on("zoom", zoomed));
-
   function zoomed() {
     focus.attr("transform", d3.event.transform);
+  }
+
+  function dragstarted(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+
+  function dragended(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart()
   }
 
 }

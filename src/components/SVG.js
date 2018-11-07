@@ -33,8 +33,9 @@ export default class SVG extends Component {
     return (
       <div id={this.state.containerId || 'queryViz'} style={style}>
         <span>
-          Scroll to zoom
-          <br />Drag to pan
+          Scroll on background to zoom
+          <br />Drag on background to pan 
+          <br />Drag on nodes to relocate
         </span>
       </div>);
   }
